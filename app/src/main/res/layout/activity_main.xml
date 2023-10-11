@@ -46,6 +46,16 @@
         android:id="@+id/brickContainer"
         android:orientation="vertical"/>
 
+            <com.google.android.material.button.MaterialButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/newGame"
+                android:layout_marginTop="20dp"
+                android:layout_centerHorizontal="true"
+                android:text="New Game"
+                app:cornerRadius="10dp"
+                android:backgroundTint="#808080"/>
+
 
     </RelativeLayout>
 
