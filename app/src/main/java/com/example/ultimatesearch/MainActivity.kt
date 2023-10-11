@@ -51,7 +51,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initializeBricks(){
-        val brickWIdthWithMargin = (brickWidth + brickMargin).toInt()
+        val brickWidthMargin = (brickWidth + brickMargin)
 
         for (row in 0 until brickRows){
             val rowLayout = LinearLayout(this)
