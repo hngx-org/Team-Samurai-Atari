@@ -13,9 +13,6 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
 
-    private lateinit var scoreText : TextView
-    private lateinit var paddle: View
-    private lateinit var ball: View
     private lateinit var brickContainer: LinearLayout
 
     private var ballX = 0f
@@ -38,9 +35,6 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        scoreText = findViewById(R.id.scoreValue)
-        paddle = findViewById(R.id.paddle)
-        ball = findViewById(R.id.ball)
         brickContainer = findViewById(R.id.brickContainer)
 
         val newGame: Button = findViewById(R.id.newGame)
@@ -75,20 +69,20 @@ class MainActivity : AppCompatActivity() {
         ballX += ballSpeedX
         ballY += ballSpeedY
 
-        ball.x = ballX
-        ball.y = ballY
+        binding.ball.x = ballX
+        binding.ball.y = ballY
     }
     private fun movePaddle(x: Float){
-        paddleX = x - (paddle.width / 2)
-        paddle.x = paddleX
+        paddleX = x - (binding.paddle.width / 2)
+        binding.paddle.x = paddleX
     }
-    @SuppressLint("ClickableViewAccessibility")
+    @SuppressLint("ClickableViewAccessibility", "SetTextI18n")
     private fun checkCollision(){
         //This block of code checks collision with walls
         val screenWidth = resources.displayMetrics.widthPixels.toFloat()
         val screenHeight = resources.displayMetrics.heightPixels.toFloat()
 
-        if (ballX <= 0 || ballX + ball.width >= screenWidth){
+        if (ballX <= 0 || ballX + binding.ball.width >= screenWidth){
             ballSpeedX *= -1
         }
         if (ballY <= 0){
@@ -96,12 +90,14 @@ class MainActivity : AppCompatActivity() {
         }
 
         //This block of code checks collision with the paddle
-        if (ballY + ball.height >= paddle.y && ballY + ball.height <= paddle.y + paddle.height
-            && ballX + ball.width >= paddle.x && ballX <= paddle.x + paddle.width){
+        if (ballY + binding.ball.height >= binding.paddle.y && ballY + binding.ball.height <= binding.paddle.y + binding.paddle.height
+            && ballX + binding.ball.width >= binding.paddle.x && ballX <= binding.paddle.x + binding.paddle.width){
             ballSpeedY *= -1
             userScore++
-            scoreText.text = "Score : $userScore"
+            binding.scoreValue.text = "Score : $userScore"
         }
 
     }
+
+
 }
