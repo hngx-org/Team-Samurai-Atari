@@ -7,8 +7,11 @@ import android.view.View
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
+import com.example.ultimatesearch.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
+
+    private lateinit var binding: ActivityMainBinding
 
     private lateinit var scoreText : TextView
     private lateinit var paddle: View
@@ -26,28 +29,29 @@ class MainActivity : AppCompatActivity() {
     private val brickColumns = 10
     private val brickWidth = 100
     private val brickHeight = 40
-    private val brickMagin = 4
+    private val brickMargin = 4
     private var isBallLaunched = false
     private var lives = 3
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         scoreText = findViewById(R.id.scoreValue)
         paddle = findViewById(R.id.paddle)
         ball = findViewById(R.id.ball)
         brickContainer = findViewById(R.id.brickContainer)
 
-        val newgame: Button = findViewById(R.id.newGame)
-        newgame.setOnClickListener(){
+        val newGame: Button = findViewById(R.id.newGame)
+        newGame.setOnClickListener(){
             initializeBricks()
         }
 
     }
 
     private fun initializeBricks(){
-        val brickWIdthWithMargin = (brickWidth + brickMagin).toInt()
+        val brickWIdthWithMargin = (brickWidth + brickMargin).toInt()
 
         for (row in 0 until brickRows){
             val rowLayout = LinearLayout(this)
@@ -59,7 +63,7 @@ class MainActivity : AppCompatActivity() {
             for (col in 0 until brickColumns){
                 val brick = View(this)
                 val brickParams = LinearLayout.LayoutParams(brickWidth, brickHeight)
-                brickParams.setMargins(brickMagin, brickMagin, brickMagin, brickMagin)
+                brickParams.setMargins(brickMargin, brickMargin, brickMargin, brickMargin)
                 brick.layoutParams = brickParams
                 brick.setBackgroundResource(R.drawable.ic_launcher_background)
                 rowLayout.addView(brick)
