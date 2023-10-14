@@ -143,7 +143,7 @@ class MainActivity : AppCompatActivity() {
 
     @SuppressLint("SetTextI18n")
     private fun updateScore() {
-        binding.scoreValue.text.toString().toInt() = "Score: userScore"
+        binding.scoreValue.text = "Score: userScore"
     }
 
     private fun handleMissedBall() {
