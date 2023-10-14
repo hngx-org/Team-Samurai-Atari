@@ -81,6 +81,7 @@ class MainActivity : AppCompatActivity() {
     }
     private fun movePaddle(x: Float){
         paddleX = x - (binding.paddle.width / 2)
+
         binding.paddle.x = paddleX
     }
 
@@ -142,7 +143,7 @@ class MainActivity : AppCompatActivity() {
 
     @SuppressLint("SetTextI18n")
     private fun updateScore() {
-        binding.scoreValue.text = "Score: userScore"
+        binding.scoreValue.text.toString().toInt() = "Score: userScore"
     }
 
     private fun handleMissedBall() {
