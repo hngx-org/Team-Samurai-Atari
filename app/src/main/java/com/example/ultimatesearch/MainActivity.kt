@@ -7,12 +7,10 @@ import android.os.Bundle
 import android.view.MotionEvent
 import android.view.View
 import android.view.animation.LinearInterpolator
-import android.widget.Button
 import android.widget.LinearLayout
-import android.widget.TextView
 
 import android.widget.Toast
-import androidx.constraintlayout.widget.ConstraintSet.Motion
+import com.example.ultimatesearch.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
 
@@ -43,11 +41,10 @@ class MainActivity : AppCompatActivity() {
 
         brickContainer = findViewById(R.id.brickContainer)
 
-        val newGame: Button = findViewById(R.id.newGame)
-        newGame.setOnClickListener(){
+        binding.newGame.setOnClickListener(){
             initializeBricks()
-            movepaddle()
-            newgame.visibility = View.INVISIBLE
+            movePaddle()
+            binding.newGame.visibility = View.INVISIBLE
             start()
         }
 
@@ -107,7 +104,7 @@ class MainActivity : AppCompatActivity() {
         }
         //This block of code check for collision with the bottom wall..
         //..when the paddle misses the ball
-        if (ballY + ball.height >= screenHeight) {
+        if (ballY + binding.ball.height >= screenHeight) {
             resetBallPosition()
         }
         //Check collision with bricks
@@ -125,12 +122,12 @@ class MainActivity : AppCompatActivity() {
                     val brickTop = brick.y + rowTop
                     val brickBottom = brickTop + brick.height
 
-                    if (ballX + ball.width >= brickLeft && ballX <= brickRight
-                        && ballY + ball.height >= brickTop && ballY <= brickBottom){
+                    if (ballX + binding.ball.width >= brickLeft && ballX <= brickRight
+                        && ballY + binding.ball.height >= brickTop && ballY <= brickBottom){
                         brick.visibility = View.VISIBLE
                         ballSpeedY *= -1
                         userScore++
-                        scoreText.text = "Score: $userScore"
+                        binding.scoreValue.text = "Score: $userScore"
                         return
 
                     }
@@ -138,7 +135,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
         //Check if paddle misses the ball and collides with wall
-        if (ballY + ball.height >= screenHeight - 100){
+        if (ballY + binding.ball.height >= screenHeight - 100){
             //reduce the number of lives
             lives--
 
@@ -146,7 +143,7 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this, "$lives balls left", Toast.LENGTH_SHORT).show()
 
             }
-            paddle.setOnTouchListener{_, event ->
+            binding.paddle.setOnTouchListener{_, event ->
                 when (event.action){
                     MotionEvent.ACTION_MOVE -> {
                         movePaddle(event.rawX)
@@ -171,27 +168,26 @@ class MainActivity : AppCompatActivity() {
         val screenWidth = displayMetrics.widthPixels.toFloat()
         val screenHeight = displayMetrics.heightPixels.toFloat()
 
-        ballX = (screenWidth / 2) - (ball.width / 2)
-        ballY= (screenHeight/2) - (ball.height/2)
+        ballX = (screenWidth / 2) - (binding.ball.width / 2)
+        ballY= (screenHeight/2) - (binding.ball.height/2)
 
-        ball.x = ballX
-        ball.y = ballY
+        binding.ball.x = ballX
+        binding.ball.y = ballY
 
         //Reset ball speed
         ballSpeedY = 0 * screenDensity
         ballSpeedX = 0 * screenDensity
 
-        paddleX = (screenWidth / 2) - (paddle.width / 2)
-        paddle.x = paddleX
+        paddleX = (screenWidth / 2) - (binding.paddle.width / 2)
+        binding.paddle.x = paddleX
     }
     private fun gameOver(){
-        scoreText.text = "Game Over"
+        binding.scoreValue.text = "Game Over"
         userScore = 0
-        val newgame: Button = findViewById(R.id.newGame)
-        newgame.visibility = View.VISIBLE
+        binding.newGame.visibility = View.VISIBLE
     }
-    private fun movepaddle(){
-        paddle.setOnTouchListener{_, event ->
+    private fun movePaddle(){
+        binding.paddle.setOnTouchListener{_, event ->
             when (event.action){
                 MotionEvent.ACTION_MOVE -> {
                     movePaddle(event.rawX)
@@ -201,26 +197,26 @@ class MainActivity : AppCompatActivity() {
         }
     }
     private fun start(){
-        movepaddle()
+        movePaddle()
         val displayMetrics = resources.displayMetrics
         val screenDensity = displayMetrics.density
         val screenWith = displayMetrics.widthPixels.toFloat()
         val screenHeight = displayMetrics.heightPixels.toFloat()
 
-        paddleX = (screenWith / 2) - (paddle.width / 2)
-        paddle.x = paddleX
+        paddleX = (screenWith / 2) - (binding.paddle.width / 2)
+        binding.paddle.x = paddleX
 
-        ballX = (screenWith / 2) - (ball.width / 2)
-        ballY = (screenHeight / 2) - (ball.height / 2)
+        ballX = (screenWith / 2) - (binding.ball.width / 2)
+        ballY = (screenHeight / 2) - (binding.ball.height / 2)
 
-        val brickHeightWithMargin = (brickHeight + brickMagin * screenDensity). toInt()
+        val brickHeightWithMargin = (brickHeight + brickMargin * screenDensity). toInt()
         ballSpeedX = 3 * screenDensity
         ballSpeedY = -3 * screenDensity
 
         val animator = ValueAnimator.ofFloat(0f, 1f)
         animator.duration = Long.MAX_VALUE
         animator.interpolator = LinearInterpolator()
-        animator.addUpdateListener { animation ->
+        animator.addUpdateListener { _ ->
             moveBall()
             checkCollision()
         }
