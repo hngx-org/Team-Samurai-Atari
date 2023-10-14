@@ -16,8 +16,6 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
 
-    private lateinit var brickContainer: LinearLayout
-
     private var ballX = 0f
     private var ballY = 0f
     private var ballSpeedX = 0f
@@ -32,6 +30,7 @@ class MainActivity : AppCompatActivity() {
     private val brickMargin = 4
     private var isBallLaunched = false
     private var lives = 3
+    private var gameStarted = false
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,10 +38,10 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        brickContainer = findViewById(R.id.brickContainer)
-
-        binding.newGame.setOnClickListener(){
-            initializeBricks()
+        binding.newGame.setOnClickListener{
+            if (!gameStarted){
+                startGame()
+            }
             movePaddle()
             binding.newGame.visibility = View.INVISIBLE
             start()
@@ -50,27 +49,41 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    private fun initializeBricks(){
-        val brickWidthMargin = (brickWidth + brickMargin)
+    private fun startGame() {
+        initializeBricks()
+        movePaddle()
+        binding.newGame.visibility = View.INVISIBLE
+        start()
+        gameStarted = true
+    }
 
-        for (row in 0 until brickRows){
+    private fun initializeBricks() {
+        brickWidth + brickMargin
+
+        for (row in 0 until brickRows) {
             val rowLayout = LinearLayout(this)
-            val params = LinearLayout.LayoutParams(
+            val rowLayoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
             )
-            rowLayout.layoutParams = params
-            for (col in 0 until brickColumns){
+            rowLayout.layoutParams = rowLayoutParams
+
+            for (col in 0 until brickColumns) {
                 val brick = View(this)
-                val brickParams = LinearLayout.LayoutParams(brickWidth, brickHeight)
-                brickParams.setMargins(brickMargin, brickMargin, brickMargin, brickMargin)
-                brick.layoutParams = brickParams
+                val brickLayoutParams = LinearLayout.LayoutParams(brickWidth, brickHeight)
+                brickLayoutParams.setMargins(brickMargin, brickMargin, brickMargin, brickMargin)
+                brick.layoutParams = brickLayoutParams
                 brick.setBackgroundResource(R.drawable.ic_launcher_background)
+                brick.visibility = View.VISIBLE // Make sure bricks are visible
+                brick.tag = R.drawable.ic_launcher_background // Set a tag to identify bricks
+
                 rowLayout.addView(brick)
             }
-            brickContainer.addView(rowLayout)
+
+            binding.brickContainer.addView(rowLayout)
         }
     }
+
     private fun moveBall(){
         ballX += ballSpeedX
         ballY += ballSpeedY
@@ -82,85 +95,100 @@ class MainActivity : AppCompatActivity() {
         paddleX = x - (binding.paddle.width / 2)
         binding.paddle.x = paddleX
     }
-    @SuppressLint("ClickableViewAccessibility", "SetTextI18n")
-    private fun checkCollision(){
-        //This block of code checks collision with walls
+
+    private fun checkCollision() {
         val screenWidth = resources.displayMetrics.widthPixels.toFloat()
         val screenHeight = resources.displayMetrics.heightPixels.toFloat()
 
-        if (ballX <= 0 || ballX + binding.ball.width >= screenWidth){
+        // Check collision with walls
+        if (ballX <= 0 || ballX + binding.ball.width >= screenWidth) {
             ballSpeedX *= -1
         }
-        if (ballY <= 0){
+        if (ballY <= 0) {
             ballSpeedY *= -1
         }
 
-        //This block of code checks collision with the paddle
-        if (ballY + binding.ball.height >= binding.paddle.y && ballY + binding.ball.height <= binding.paddle.y + binding.paddle.height
-            && ballX + binding.ball.width >= binding.paddle.x && ballX <= binding.paddle.x + binding.paddle.width){
+        // Check collision with the paddle
+        val paddle = binding.paddle
+        if (ballY + binding.ball.height >= paddle.y &&
+            ballY + binding.ball.height <= paddle.y + paddle.height &&
+            ballX + binding.ball.width >= paddle.x &&
+            ballX <= paddle.x + paddle.width
+        ) {
             ballSpeedY *= -1
             userScore++
-            binding.scoreValue.text = "Score : $userScore"
+            updateScore()
         }
-        //This block of code check for collision with the bottom wall..
-        //..when the paddle misses the ball
-        if (ballY + binding.ball.height >= screenHeight) {
-            resetBallPosition()
-        }
-        //Check collision with bricks
-        for (row in 0 until brickRows){
-            val rowLayout = brickContainer.getChildAt(row) as LinearLayout
-            val rowTop = rowLayout.y + brickContainer.y
-            val rowBottom = rowTop + rowLayout.height
 
-            for (col in 0 until brickColumns){
+        // Check collision with the bottom wall when the paddle misses the ball
+        if (ballY + binding.ball.height >= screenHeight) {
+            handleMissedBall()
+        }
+
+        // Check collision with bricks
+        for (row in 0 until brickRows) {
+            val rowLayout = binding.brickContainer.getChildAt(row) as LinearLayout
+            val rowTop = rowLayout.y + binding.brickContainer.y
+
+            for (col in 0 until brickColumns) {
                 val brick = rowLayout.getChildAt(col) as View
 
-                if (brick.visibility == View.VISIBLE){
+                if (brick.visibility == View.VISIBLE) {
                     val brickLeft = brick.x + rowLayout.x
                     val brickRight = brickLeft + brick.width
                     val brickTop = brick.y + rowTop
                     val brickBottom = brickTop + brick.height
 
-                    if (ballX + binding.ball.width >= brickLeft && ballX <= brickRight
-                        && ballY + binding.ball.height >= brickTop && ballY <= brickBottom){
-                        brick.visibility = View.VISIBLE
-                        ballSpeedY *= -1
-                        userScore++
-                        binding.scoreValue.text = "Score: $userScore"
+                    if (ballX + binding.ball.width >= brickLeft &&
+                        ballX <= brickRight &&
+                        ballY + binding.ball.height >= brickTop &&
+                        ballY <= brickBottom
+                    ) {
+                        handleBrickCollision(brick)
                         return
-
                     }
                 }
-            }
-        }
-        //Check if paddle misses the ball and collides with wall
-        if (ballY + binding.ball.height >= screenHeight - 100){
-            //reduce the number of lives
-            lives--
-
-            if (lives > 0){
-                Toast.makeText(this, "$lives balls left", Toast.LENGTH_SHORT).show()
-
-            }
-            binding.paddle.setOnTouchListener{_, event ->
-                when (event.action){
-                    MotionEvent.ACTION_MOVE -> {
-                        movePaddle(event.rawX)
-                    }
-                }
-                true
-            }
-            if (lives <= 0){
-                //Game over if no more lives left
-                gameOver()
-            }else{
-                //Return ball to initial position
-                resetBallPosition()
-                start()
             }
         }
     }
+
+    @SuppressLint("SetTextI18n")
+    private fun updateScore() {
+        binding.scoreValue.text = "Score: userScore"
+    }
+
+    private fun handleMissedBall() {
+        lives--
+        if (lives > 0) {
+            Toast.makeText(this, "$lives balls left", Toast.LENGTH_SHORT).show()
+            setupPaddleTouchListener()
+            resetBallPosition()
+            start()
+        } else gameOver()
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    private fun setupPaddleTouchListener() {
+        binding.paddle.setOnTouchListener { _, event ->
+            when (event.action) {
+                MotionEvent.ACTION_MOVE -> {
+                    movePaddle(event.rawX)
+                }
+            }
+            true
+        }
+    }
+
+    private fun handleBrickCollision(brick: View) {
+        brick.visibility = View.GONE
+        ballSpeedY *= -1
+        ballSpeedX *= -1
+        userScore++
+        updateScore()
+    }
+
+
+
     private fun resetBallPosition(){
         //Reset the ball to its initial position
         val displayMetrics = resources.displayMetrics
@@ -181,11 +209,13 @@ class MainActivity : AppCompatActivity() {
         paddleX = (screenWidth / 2) - (binding.paddle.width / 2)
         binding.paddle.x = paddleX
     }
+    @SuppressLint("SetTextI18n")
     private fun gameOver(){
         binding.scoreValue.text = "Game Over"
         userScore = 0
         binding.newGame.visibility = View.VISIBLE
     }
+    @SuppressLint("ClickableViewAccessibility")
     private fun movePaddle(){
         binding.paddle.setOnTouchListener{_, event ->
             when (event.action){
@@ -196,7 +226,45 @@ class MainActivity : AppCompatActivity() {
             true
         }
     }
-    private fun start(){
+
+
+    private var animator: ValueAnimator? = null // Class-level variable to track the animation
+
+    private fun start() {
+        movePaddle()
+
+        if (animator != null && animator?.isRunning == true) {
+            // Stop the previous animation if it's running
+            animator?.cancel()
+        }
+
+        val displayMetrics = resources.displayMetrics
+        val screenDensity = displayMetrics.density
+        val screenWith = displayMetrics.widthPixels.toFloat()
+        val screenHeight = displayMetrics.heightPixels.toFloat()
+
+        paddleX = (screenWith / 2) - (binding.paddle.width / 2)
+        binding.paddle.x = paddleX
+
+        ballX = (screenWith / 2) - (binding.ball.width / 2)
+        ballY = (screenHeight / 2) - (binding.ball.height / 2)
+
+        val brickHeightWithMargin = (brickHeight + brickMargin * screenDensity).toInt()
+        ballSpeedX = 3 * screenDensity
+        ballSpeedY = -3 * screenDensity
+
+        // Create a new ValueAnimator and start it
+        animator = ValueAnimator.ofFloat(0f, 1f)
+        animator?.duration = Long.MAX_VALUE
+        animator?.interpolator = LinearInterpolator()
+        animator?.addUpdateListener { _ ->
+            moveBall()
+            checkCollision()
+        }
+        animator?.start()
+    }
+
+    /*private fun start(){
         movePaddle()
         val displayMetrics = resources.displayMetrics
         val screenDensity = displayMetrics.density
@@ -222,6 +290,8 @@ class MainActivity : AppCompatActivity() {
         }
         animator.start()
     }
+
+     */
 
 
 }
