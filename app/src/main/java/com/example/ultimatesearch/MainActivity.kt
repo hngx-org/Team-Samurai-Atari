@@ -24,13 +24,12 @@ class MainActivity : AppCompatActivity() {
     private var userScore = 0
     private val brickRows = 5
 
-    private val brickColumns = 10
-    private val brickWidth = 100
+    private val brickColumns = 7
+    private val brickWidth = 97
     private val brickHeight = 40
     private val brickMargin = 4
     private var isBallLaunched = false
     private var lives = 3
-    private var gameStarted = false
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,16 +47,7 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    private fun startGame() {
-        initializeBricks()
-        movePaddle()
-        binding.newGame.visibility = View.INVISIBLE
-        start()
-        gameStarted = true
-    }
-
     private fun initializeBricks() {
-        brickWidth + brickMargin
 
         for (row in 0 until brickRows) {
             val rowLayout = LinearLayout(this)
@@ -73,7 +63,6 @@ class MainActivity : AppCompatActivity() {
                 brickLayoutParams.setMargins(brickMargin, brickMargin, brickMargin, brickMargin)
                 brick.layoutParams = brickLayoutParams
                 brick.setBackgroundResource(R.drawable.ic_launcher_background)
-                brick.visibility = View.VISIBLE // Make sure bricks are visible
                 brick.tag = R.drawable.ic_launcher_background // Set a tag to identify bricks
 
                 rowLayout.addView(brick)

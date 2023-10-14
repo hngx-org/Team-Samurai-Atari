@@ -27,37 +27,39 @@
         android:layout_marginBottom="100dp"
         android:background="@color/black">
 
-    <View
-        android:layout_width="100dp"
-        android:layout_height="20dp"
-        android:id="@+id/paddle"
-        android:background="#FFC0CB"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"/>
-    <View
-        android:layout_width="25dp"
-        android:layout_height="25dp"
-        android:id="@+id/ball"
-        android:background="@drawable/circle_background"
-        android:layout_above="@id/paddle"
-        android:layout_centerHorizontal="true"/>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@id/ball"
-        android:layout_marginBottom="20dp"
-        android:id="@+id/brickContainer"
-        android:orientation="vertical"/>
+        <View
+            android:id="@+id/paddle"
+            android:layout_width="100dp"
+            android:layout_height="20dp"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:background="#FFC0CB" />
 
-            <com.google.android.material.button.MaterialButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/newGame"
-                android:layout_marginTop="20dp"
-                android:layout_centerHorizontal="true"
-                android:text="New Game"
-                app:cornerRadius="10dp"
-                android:backgroundTint="#808080"/>
+        <View
+            android:id="@+id/ball"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_above="@id/paddle"
+            android:layout_centerHorizontal="true"
+            android:background="@drawable/circle_background" />
+
+        <LinearLayout
+            android:id="@+id/brickContainer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@id/ball"
+            android:layout_marginBottom="20dp"
+            android:orientation="vertical" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/newGame"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dp"
+            android:backgroundTint="#808080"
+            android:text="New Game"
+            app:cornerRadius="10dp" />
 
 
     </RelativeLayout>
