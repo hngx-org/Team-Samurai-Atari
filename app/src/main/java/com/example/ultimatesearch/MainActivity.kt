@@ -22,7 +22,7 @@ class MainActivity : AppCompatActivity() {
     private var ballSpeedY = 0f
     private var paddleX = 0f
     private var userScore = 0
-    private val brickRows = 5
+    private val brickRows = 3
 
     private val brickColumns = 7
     private val brickWidth = 97
@@ -81,7 +81,6 @@ class MainActivity : AppCompatActivity() {
     }
     private fun movePaddle(x: Float){
         paddleX = x - (binding.paddle.width / 2)
-
         binding.paddle.x = paddleX
     }
 
@@ -105,8 +104,6 @@ class MainActivity : AppCompatActivity() {
             ballX <= paddle.x + paddle.width
         ) {
             ballSpeedY *= -1
-            userScore++
-            updateScore()
         }
 
         // Check collision with the bottom wall when the paddle misses the ball
@@ -143,7 +140,7 @@ class MainActivity : AppCompatActivity() {
 
     @SuppressLint("SetTextI18n")
     private fun updateScore() {
-        binding.scoreValue.text = "Score: userScore"
+        binding.scoreValue.text = "Score: $userScore"
     }
 
     private fun handleMissedBall() {
