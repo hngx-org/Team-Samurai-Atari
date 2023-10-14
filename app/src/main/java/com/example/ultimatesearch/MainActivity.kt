@@ -38,10 +38,9 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        initializeBricks()
+
         binding.newGame.setOnClickListener{
-            if (!gameStarted){
-                startGame()
-            }
             movePaddle()
             binding.newGame.visibility = View.INVISIBLE
             start()
@@ -263,35 +262,5 @@ class MainActivity : AppCompatActivity() {
         }
         animator?.start()
     }
-
-    /*private fun start(){
-        movePaddle()
-        val displayMetrics = resources.displayMetrics
-        val screenDensity = displayMetrics.density
-        val screenWith = displayMetrics.widthPixels.toFloat()
-        val screenHeight = displayMetrics.heightPixels.toFloat()
-
-        paddleX = (screenWith / 2) - (binding.paddle.width / 2)
-        binding.paddle.x = paddleX
-
-        ballX = (screenWith / 2) - (binding.ball.width / 2)
-        ballY = (screenHeight / 2) - (binding.ball.height / 2)
-
-        val brickHeightWithMargin = (brickHeight + brickMargin * screenDensity). toInt()
-        ballSpeedX = 3 * screenDensity
-        ballSpeedY = -3 * screenDensity
-
-        val animator = ValueAnimator.ofFloat(0f, 1f)
-        animator.duration = Long.MAX_VALUE
-        animator.interpolator = LinearInterpolator()
-        animator.addUpdateListener { _ ->
-            moveBall()
-            checkCollision()
-        }
-        animator.start()
-    }
-
-     */
-
 
 }
